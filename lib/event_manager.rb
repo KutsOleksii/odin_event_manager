@@ -18,8 +18,6 @@ end
 
 DATETIME_VALUES = Array.new(1000) { DateTime.new(2023, 1, 1) + rand * 365 }
 
-max_hour = DATETIME_VALUES.map(&:hour).tally.max_by {|hour, count| count}
-max_wday = DATETIME_VALUES.map(&:wday).tally.max_by {|wday, count| count}
 # ========================= ASSIGNMENTs end =========================
 
 def clean_zipcode(zipcode)
@@ -62,9 +60,12 @@ contents = CSV.open(
 template_letter = File.read('form_letter.erb')
 erb_template = ERB.new template_letter
 
+datetime_values = []
+
 contents.each do |row|
   id = row[0]
   name = row[:first_name]
+  datetime_values << DateTime.strptime(row[:regdate], "%m/%d/%y %H:%M")
 
   zipcode = clean_zipcode(row[:zipcode])
 
@@ -74,3 +75,6 @@ contents.each do |row|
 
   save_thank_you_letter(id, form_letter)
 end
+
+pp max_hour = datetime_values.map(&:hour).tally.max_by {|hour, count| count}
+pp max_wday = datetime_values.map(&:wday).tally.max_by {|wday, count| count}
